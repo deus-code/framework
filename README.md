@@ -7,5 +7,13 @@
 ## DC Framework
 [DC Framework](https://deus-code.ru/) - это среда для разработки веб-приложений на PHP с открытым исходным кодом.
 
+## Установка DC Framework через Composer
+Вы можете установить DC Framework, используя
+[Composer](https://getcomposer.org).
+
+``` bash
+$ composer require deus-code/framework
+```
+
 ## Лицензия
 DC Framework распространяется по [лицензии MIT](https://opensource.org/licenses/MIT).
