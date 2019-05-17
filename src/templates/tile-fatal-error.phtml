@@ -1,0 +1,12 @@
+<?php
+/**
+ * @var \DCFramework\Template $this
+ */
+?>
+<div class="dcFatalError">
+    <strong>Fatal error:</strong><br/>
+    <?php foreach (\DCFramework\Storage::$fatalError['message'] as $item): ?>
+        <span><?=$item?></span><br/>
+    <?php endforeach; ?>
+    <span class="dcFatalErrorHint">File: <?=\DCFramework\Storage::$fatalError['file']?> on line <?=\DCFramework\Storage::$fatalError['line']?></span>
+</div>
