@@ -16,7 +16,7 @@ namespace DCFramework;
  */
 class AppConfig{
     public function setReleaseInit($releases=array()){
-        foreach ($releases as $release=>$host){
+        foreach ($releases as $host=>$release){
             if($_SERVER['SERVER_NAME']==$host or $_SERVER['SERVER_ADDR']==$host or $_SERVER['REMOTE_ADDR']==$releases){
                 Storage::$release=$release;
             }
