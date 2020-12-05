@@ -120,8 +120,8 @@ class TemplateEngine{
         return Storage::$webRoot;
     }
 
-	private function compileStyles(){
-	    $result = '';
+    private function compileStyles(){
+        $result = '';
         $name = 'styles_dc.css';
         $cache = new Cache($name);
         if (!$cache->exist()) {
@@ -142,8 +142,9 @@ class TemplateEngine{
             if(Storage::$minifyStyles and strlen($style_min)>0) $style_min = $this->minify->css($style_min);
             $cache->save($style_min);
         }
-        $result .= "\t".'<link rel="stylesheet" href="' . Storage::$webRoot . 'cache/' . $name . '" />'."\n";
-	    foreach (Storage::$loadPackages as $package){
+        $result .= "\t".'<link rel="preload" href="' . Storage::$webRoot . 'cache/' . $name . '" as="style" />'."\n";
+        Storage::$loadPackages[] = 'preload';
+        foreach (Storage::$loadPackages as $package){
             if(isset(Storage::$styles[$package]) and is_array(Storage::$styles[$package])){
                 $hash = md5(serialize(Storage::$styles[$package]));
                 $name = 'styles_' . $package . '_' . $hash . '.css';
@@ -180,7 +181,11 @@ class TemplateEngine{
                     if(Storage::$minifyStyles and strlen($style_min)>0) $style_min = $this->minify->css($style_min);
                     $cache->save($style_min);
                 }
-                $result .= "\t".'<link rel="stylesheet" href="' . Storage::$webRoot . 'cache/' . $name . '" />'."\n";
+                if($package=='preload'){
+                    $result .= "\t".'<link rel="preload" href="' . Storage::$webRoot . 'cache/' . $name . '" as="style" />'."\n";
+                }else{
+                    $result .= "\t".'<link rel="stylesheet" href="' . Storage::$webRoot . 'cache/' . $name . '" />'."\n";
+                }
             }
         }
         echo $result;
