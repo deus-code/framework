@@ -49,7 +49,7 @@ class App{
         Storage::$appDir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR;
 
         // подключение настроек плагинов
-        if(Storage::$pluginsDir==false) Storage::$pluginsDir = dirname(Storage::$appDir) . DIRECTORY_SEPARATOR;
+        if(Storage::$pluginsDir==false) Storage::$pluginsDir = dirname(Storage::$appDir) . DIRECTORY_SEPARATOR . Storage::$pluginsFolder . DIRECTORY_SEPARATOR;
         $plugins_folders = array_diff(scandir(Storage::$pluginsDir),array('..', '.'));
         foreach ($plugins_folders as $plugin) {
             $configPluginClass = '\\'.Storage::$namespacePlugins.'\\'.$plugin.'\\Config';
