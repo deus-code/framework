@@ -36,6 +36,10 @@ class TemplateEngine{
         $appMainFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $mainTemplate .'.phtml';
         $mainFile = Storage::$frameworkTemplatesDir . $mainTemplate .'.phtml';
         if(file_exists($appMainFile)) $mainFile = $appMainFile;
+        if(Storage::$mainTemplatePlugin!=false){
+            $pluginMainFile = Storage::$pluginsDir . Storage::$mainTemplatePlugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $mainTemplate .'.phtml';
+            if(file_exists($pluginMainFile)) $mainFile = $pluginMainFile;
+        }
         if(file_exists($mainFile)){
             ob_start();
             require $mainFile;
@@ -50,9 +54,15 @@ class TemplateEngine{
 	public function output(){
 		ob_start();
         $appHtmlFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . Storage::$outputTemplate .'.phtml';
-        $dcHtmlFile = Storage::$frameworkTemplatesDir . Storage::$outputTemplate .'.phtml';;
+        $dcHtmlFile = Storage::$frameworkTemplatesDir . Storage::$outputTemplate .'.phtml';
+        $pluginHtmlFile = false;
+        if(Storage::$outputTemplatePlugin!=false){
+            $pluginHtmlFile = Storage::$pluginsDir . Storage::$outputTemplatePlugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . Storage::$outputTemplate .'.phtml';
+        }
         if(file_exists($appHtmlFile)){
             require $appHtmlFile;
+        }elseif($pluginHtmlFile!=false and file_exists($pluginHtmlFile)){
+            require $pluginHtmlFile;
         }elseif(file_exists($dcHtmlFile)){
             require $dcHtmlFile;
         }
@@ -61,7 +71,7 @@ class TemplateEngine{
 		echo $html;
 	}
 
-	public function loadTemplate($template,$vars=array()){
+	public function loadTemplate($template,$vars=array(),$plugin=false){
 	    if(is_array($vars)){
 	        foreach ($vars as $key=>$var){
                 $this->vars[$key]=$var;
@@ -70,14 +80,22 @@ class TemplateEngine{
 		$file = Storage::$frameworkTemplatesDir . $template . '.phtml';
         $appMainFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template . '.phtml';
         if(file_exists($appMainFile)) $file = $appMainFile;
+        if($plugin!=false){
+            $pluginMainFile = Storage::$pluginsDir . $plugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template .'.phtml';
+            if(file_exists($pluginMainFile)) $file = $pluginMainFile;
+        }
 		if(file_exists($file)) require $file;
 	}
 
-	public function existTemplate($template){
+	public function existTemplate($template,$plugin=false){
 		$file = Storage::$frameworkTemplatesDir . $template . '.phtml';
         $appMainFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template . '.phtml';
         $result = false;
         if(file_exists($appMainFile)) $result = true;
+        if($plugin!=false){
+            $pluginMainFile = Storage::$pluginsDir . $plugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template .'.phtml';
+            if(file_exists($pluginMainFile)) $file = $pluginMainFile;
+        }
 		if(file_exists($file)) $result = true;
 		return $result;
 	}

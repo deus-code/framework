@@ -84,7 +84,9 @@ class Storage{
      * Настройки шаблона
      */
     public static $mainTemplate = 'index';
+    public static $mainTemplatePlugin = false;
     public static $outputTemplate = 'html';
+    public static $outputTemplatePlugin = false;
     public static $templateVars = array();
     public static $metaTitle = '';
     public static $metaDescription = '';
