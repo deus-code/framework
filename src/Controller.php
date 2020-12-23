@@ -50,6 +50,10 @@ class Controller{
         }
     }
 
+    function checkPlugin($pluginName){
+        return (in_array($pluginName,Storage::$pluginsList)) ? true : false ;
+    }
+
     public function getType(){
         return $this->type;
     }

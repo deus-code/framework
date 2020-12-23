@@ -58,6 +58,10 @@ class Model{
         }
     }
 
+    function checkPlugin($pluginName){
+        return (in_array($pluginName,Storage::$pluginsList)) ? true : false ;
+    }
+
     public function getWebRoot(){
         return Storage::$webRoot;
     }

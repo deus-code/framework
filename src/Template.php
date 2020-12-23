@@ -67,4 +67,7 @@ class Template{
         return $html;
     }
 
+    function checkPlugin($pluginName){
+        return (in_array($pluginName,Storage::$pluginsList)) ? true : false ;
+    }
 }
