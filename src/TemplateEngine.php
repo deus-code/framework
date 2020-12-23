@@ -15,17 +15,23 @@ namespace DCFramework;
  * @package DCFramework
  * @property \DCFramework\Minify $minify
  * @property Session $session
+ * @property Query $query
+ * @property Settings $settings
  */
 class TemplateEngine{
 	private $minify;
     private $vars = array();
 	private $html = '';
     public $session;
+    public $query;
+    public $settings;
 
 	function __construct(){
         $this->session = Instance::getSessionInstance();
         $this->vars = Storage::$templateVars;
         $this->minify = new Minify();
+        $this->query = Instance::getQueryInstance();
+        $this->settings = Instance::getSettingsInstance();
     }
 
     public function render(){

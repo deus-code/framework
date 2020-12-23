@@ -13,21 +13,8 @@ namespace DCFramework;
  * Управление шаблонами
  *
  * @package DCFramework
- * @property Session $session
- * @property Query $query
- * @property Settings $settings
  */
 class Template{
-    public $session;
-    public $query;
-    public $settings;
-
-    public function __construct(){
-        $this->session = Instance::getSessionInstance();
-        $this->query = Instance::getQueryInstance();
-        $this->settings = Instance::getSettingsInstance();
-    }
-
     public function assign($key,$value){
         Storage::$templateVars[$key] = $value;
     }
