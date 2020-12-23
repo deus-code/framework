@@ -16,12 +16,20 @@ namespace DCFramework;
  */
 class Instance{
     public static $_model_instance = array();
-    public static function getModelInstance($class) {
-        if (!array_key_exists($class,self::$_model_instance)) {
-            $class_name = '\\'.Storage::$namespaceApp.'\\'.Storage::$modelsFolder.'\\'.$class.'Model';
-            self::$_model_instance[$class] = new $class_name();
+    public static function getModelInstance($class,$plugin=false) {
+        if($plugin){
+            if (!array_key_exists($class.$plugin,self::$_model_instance)) {
+                $class_name = '\\'.Storage::$namespacePlugins.'\\'.$plugin.'\\'.Storage::$modelsFolder.'\\'.$class.'Model';
+                self::$_model_instance[$class.$plugin] = new $class_name();
+            }
+            return self::$_model_instance[$class.$plugin];
+        }else{
+            if (!array_key_exists($class,self::$_model_instance)) {
+                $class_name = '\\'.Storage::$namespaceApp.'\\'.Storage::$modelsFolder.'\\'.$class.'Model';
+                self::$_model_instance[$class] = new $class_name();
+            }
+            return self::$_model_instance[$class];
         }
-        return self::$_model_instance[$class];
     }
 
     public static $_session_instance = null;

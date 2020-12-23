@@ -52,9 +52,9 @@ class Model{
 		return $db;
 	}
 	
-    function loadModel($modelName){
+    function loadModel($modelName,$plugin=false){
         if(!isset($this->$modelName)) {
-            $this->$modelName = Instance::getModelInstance($modelName);
+            $this->$modelName = Instance::getModelInstance($modelName,$plugin);
         }
     }
 
