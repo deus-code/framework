@@ -13,10 +13,17 @@ namespace DCFramework;
  * Настройка приложения
  *
  * @package DCFramework
+ * @property Settings $settings
  */
 class AppConfig{
+    public $settings;
+
+    public function __construct(){
+        $this->settings = Instance::getSettingsInstance();
+    }
+
     public function setReleaseInit($releases=array()){
-        foreach ($releases as $host=>$release){
+        foreach ($releases as $release=>$host){
             if($_SERVER['SERVER_NAME']==$host or $_SERVER['SERVER_ADDR']==$host or $_SERVER['REMOTE_ADDR']==$releases){
                 Storage::$release=$release;
             }
@@ -61,16 +68,6 @@ class AppConfig{
 
     public function setWebRoot($webRoot='/'){
         Storage::$webRoot = $webRoot;
-    }
-
-    public function activePlugin($plugin){
-        Storage::$plugins[md5($plugin)] = $plugin;
-    }
-
-    public function activePlugins($plugins=array()){
-        foreach($plugins as $plugin){
-            Storage::$plugins[md5($plugin)] = $plugin;
-        }
     }
 
     public function setAssetsLink($name,$dir){

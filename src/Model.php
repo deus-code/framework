@@ -19,6 +19,7 @@ namespace DCFramework;
  * @property Query $query
  * @property Template $template
  * @property Files $files
+ * @property Settings $settings
  */
 class Model{
     public $session;
@@ -27,6 +28,7 @@ class Model{
     public $query;
     public $template;
     public $files;
+    public $settings;
 
     public function __construct(){
         $this->session = Instance::getSessionInstance();
@@ -35,6 +37,7 @@ class Model{
         $this->query = Instance::getQueryInstance();
         $this->template = Instance::getTemplateInstance();
         $this->files = Instance::getFilesInstance();
+        $this->settings = Instance::getSettingsInstance();
     }
 
 	public function table($table){

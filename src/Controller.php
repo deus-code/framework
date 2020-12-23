@@ -19,6 +19,7 @@ namespace DCFramework;
  * @property Query $query
  * @property Template $template
  * @property Files $files
+ * @property Settings $settings
  */
 class Controller{
     private $status=200;
@@ -34,6 +35,7 @@ class Controller{
     public $query;
     public $template;
     public $files;
+    public $settings;
 
     public function __construct(){
         $this->session = Instance::getSessionInstance();
@@ -42,6 +44,7 @@ class Controller{
         $this->query = Instance::getQueryInstance();
         $this->template = Instance::getTemplateInstance();
         $this->files = Instance::getFilesInstance();
+        $this->settings = Instance::getSettingsInstance();
     }
     
     function loadModel($modelName,$plugin=false){

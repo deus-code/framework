@@ -32,7 +32,6 @@ class Storage{
     public static $errors = array();
     public static $fatalError = array();
     public static $rules = array();
-    public static $plugins = array();
     public static $styles = array('main'=>array());
     public static $scripts = array('main'=>array());
     public static $assetsLinks = array();
@@ -92,4 +91,9 @@ class Storage{
     public static $metaDescription = '';
     public static $metaKeywords = array();
     public static $loadPackages = array('main');
+
+    /**
+     * Хранилище данных для использования в приложении
+     */
+    public static $settingsData = array();
 }

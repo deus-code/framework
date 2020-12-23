@@ -79,4 +79,12 @@ class Instance{
         }
         return self::$_files_instance;
     }
+
+    public static $_settings_instance = null;
+    public static function getSettingsInstance() {
+        if (self::$_settings_instance==null) {
+            self::$_settings_instance = new Settings();
+        }
+        return self::$_settings_instance;
+    }
 }
