@@ -118,6 +118,9 @@ class Router{
 								case 'action':
 									$val['action']=$matches[$i];
 									break;
+								case 'plugin':
+									$val['plugin']=$matches[$i];
+									break;
 								default:
 									$this->result['options'][$k1] = $matches[$i];
 									break;
@@ -126,6 +129,7 @@ class Router{
 						$i++;
 					}
 				}
+				if(isset($val['plugin'])) $this->result['plugin'] = $val['plugin'];
 				if(isset($val['controller'])) $this->result['controller'] = $val['controller'];
 				if(isset($val['action'])) $this->result['action'] = $val['action'];
 				if(isset($val['redirect'])) $this->result['redirect'] = $val['redirect'];
