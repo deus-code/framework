@@ -25,7 +25,7 @@ class App{
     private $outputTemplate;
     private $Files;
 
-	function __construct($namespaceApp,$namespacePlugins='Plugins'){
+	function __construct($namespaceApp,$namespacePlugins='plugins'){
         if(!session_id()) session_start();
         $this->Files = new Files();
         Storage::$namespaceApp = $namespaceApp;
@@ -47,6 +47,15 @@ class App{
         }
         $reflection = new \ReflectionClass($configAppClass);
         Storage::$appDir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR;
+
+        // подключение настроек плагинов
+        if(Storage::$pluginsDir==false) Storage::$pluginsDir = dirname(Storage::$appDir) . DIRECTORY_SEPARATOR;
+        $plugins_folders = array_diff(scandir(Storage::$pluginsDir),array('..', '.'));
+        foreach ($plugins_folders as $plugin) {
+            $configPluginClass = '\\'.Storage::$namespacePlugins.'\\'.$plugin.'\\Config';
+            new $configPluginClass();
+            Storage::$pluginsList[] = $plugin;
+        }
 
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
         if(isset($backtrace[0]['file'])){

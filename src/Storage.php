@@ -17,6 +17,7 @@ namespace DCFramework;
 class Storage{
     public static $appDir;
     public static $publicDir;
+    public static $pluginsDir=false;
     public static $namespaceApp;
     public static $namespacePlugins;
     public static $frameworkTemplatesDir;
@@ -39,6 +40,7 @@ class Storage{
     public static $minifyScripts = true;
     public static $minifyHtml = true;
     public static $debug = false;
+    public static $pluginsList = array();
     /**
      * Запросы
      */
