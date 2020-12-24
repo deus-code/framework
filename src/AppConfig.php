@@ -131,4 +131,7 @@ class AppConfig{
     public function setDbCharset($charset){
         Storage::$dbCharset = $charset;
     }
+    public function getWebRoot(){
+        return Storage::$webRoot;
+    }
 }
