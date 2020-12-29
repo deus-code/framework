@@ -144,112 +144,139 @@ class TemplateEngine{
         return Storage::$webRoot;
     }
 
-	private function compileStyles(){
-	    $result = '';
-        $name = 'styles_dc.css';
-        $cache = new Cache($name);
-        if (!$cache->exist()) {
-            $style_min = '';
-            $less_content = "@WEB_ROOT: '".Storage::$webRoot."';\n";
-            $less_content .= file_get_contents(Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'framework.less') . "\n";
-            if(Storage::$debug) $less_content .= file_get_contents(Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'debug.less') . "\n";
-            $less_content .= file_get_contents(Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'popup.less') . "\n";
-            if(strlen($less_content)>0){
-                $less = new \lessc();
-                try {
-                    $less_content = $less->compile($less_content);
-                } catch (\Exception $e) {
-                    trigger_error('Error Less gen: '. $e->getMessage());
-                }
-                $style_min .= $less_content . "\n";
-            }
-            if(Storage::$minifyStyles and strlen($style_min)>0) $style_min = $this->minify->css($style_min);
-            $cache->save($style_min);
+    public function setStyle($file,$plugin='main'){
+	    $template = false;
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
+        if(isset($backtrace[0]['file'])) $template = $backtrace[0]['file'];
+        if($template) Storage::$assetsTemplatesList[$template] = $template;
+	    $dir = (isset(Storage::$assetsDirs[$plugin])) ? Storage::$assetsDirs[$plugin] : '';
+        $file = $dir.$file;
+        if(file_exists($file)){
+            Storage::$styles[md5($file)] = array(
+                'file'=>$file,
+                'version'=>filemtime($file),
+            );
         }
-        $result .= "\t".'<link rel="stylesheet" href="' . Storage::$webRoot . 'cache/' . $name . '" />'."\n";
-	    foreach (Storage::$loadPackages as $package){
-            if(isset(Storage::$styles[$package]) and is_array(Storage::$styles[$package])){
-                $hash = md5(serialize(Storage::$styles[$package]));
-                $name = 'styles_' . $package . '_' . $hash . '.css';
-                $cache = new Cache($name);
-                if (!$cache->exist()) {
-                    $style_min = '';
-                    $less_content = "@WEB_ROOT: '".Storage::$webRoot."';\n";
-                    foreach (Storage::$styles[$package] as $item){
-                        if(isset($item['file']) and isset($item['version'])){
-                            $file = $item['file'];
-                            $version = $item['version'];
-                            $ext = pathinfo($file, PATHINFO_EXTENSION);
-                            $style_content = file_get_contents($file);
-                            switch (strtolower($ext)){
-                                case 'less':
-                                    $less_content .= $style_content . "\n";
-                                    break;
-                                default:
-                                    $style_min .= $style_content . "\n";
-                                    break;
-                            }
-                        }
-                    }
-                    if(strlen($less_content)>0){
-                        $less = new \lessc();
-                        try {
-                            $less_content = $less->compile($less_content);
-                        } catch (\Exception $e) {
-                            trigger_error('Error Less gen: '. $e->getMessage());
-                        }
-                        $style_min .= $less_content . "\n";
-                    }
-                    array_map("unlink", glob( Storage::$publicDir . 'cache' . DIRECTORY_SEPARATOR . 'styles_' . $package . '_*'));
-                    if(Storage::$minifyStyles and strlen($style_min)>0) $style_min = $this->minify->css($style_min);
-                    $cache->save($style_min);
-                }
-                $result .= "\t".'<link rel="stylesheet" href="' . Storage::$webRoot . 'cache/' . $name . '" />'."\n";
+    }
+
+    public function setScript($file,$plugin='main'){
+	    $template = false;
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
+        if(isset($backtrace[0]['file'])) $template = $backtrace[0]['file'];
+        if($template) Storage::$assetsTemplatesList[$template] = $template;
+	    $dir = (isset(Storage::$assetsDirs[$plugin])) ? Storage::$assetsDirs[$plugin] : '';
+        $file = $dir.$file;
+        if(file_exists($file)){
+            Storage::$scripts[md5($file)] = array(
+                'file'=>$file,
+                'version'=>filemtime($file),
+                'type'=>'file',
+            );
+        }
+    }
+
+    public function setScriptCDN($url){
+	    $template = false;
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
+        if(isset($backtrace[0]['file'])) $template = $backtrace[0]['file'];
+        if($template) Storage::$assetsTemplatesList[$template] = $template;
+        Storage::$scripts[md5('cdn:'.$url)] = array(
+            'file'=>$url,
+            'version'=>'1.0',
+            'type'=>'cdn',
+        );
+    }
+
+    private function compileStyles(){
+	    $result = '';
+        if(is_array(Storage::$styles)){
+            $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'popup.less';
+            array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
+            if(Storage::$debug){
+                $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'debug.less';
+                array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
             }
+            $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'framework.less';
+            array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
+
+            $hash_pack = md5(serialize(Storage::$assetsTemplatesList));
+            $hash = md5(serialize(Storage::$styles));
+            $name = $hash_pack.'_'.$hash . '.css';
+            $cache = new Cache($name);
+            if (!$cache->exist()) {
+                $style_min = '';
+                $less_content = "@WEB_ROOT: '".Storage::$webRoot."';\n";
+                foreach (Storage::$styles as $item){
+                    if(isset($item['file']) and isset($item['version'])){
+                        $file = $item['file'];
+                        $version = $item['version'];
+                        $ext = pathinfo($file, PATHINFO_EXTENSION);
+                        $style_content = file_get_contents($file);
+                        switch (strtolower($ext)){
+                            case 'less':
+                                $less_content .= $style_content . "\n";
+                                break;
+                            default:
+                                $style_min .= $style_content . "\n";
+                                break;
+                        }
+                    }
+                }
+                if(strlen($less_content)>0){
+                    $less = new \lessc();
+                    try {
+                        $less_content = $less->compile($less_content);
+                    } catch (\Exception $e) {
+                        trigger_error('Error Less gen: '. $e->getMessage());
+                    }
+                    $style_min .= $less_content . "\n";
+                }
+                array_map("unlink", glob( Storage::$publicDir . 'cache' . DIRECTORY_SEPARATOR . $hash_pack . '_*.css'));
+                if(Storage::$minifyStyles and strlen($style_min)>0) $style_min = $this->minify->css($style_min);
+                $cache->save($style_min);
+            }
+            $result .= "\t".'<link rel="stylesheet" href="' . Storage::$webRoot . 'cache/' . $name . '" />'."\n";
         }
         echo $result;
     }
 
 	private function compileScripts(){
 	    $result = '';
-        $name = 'scripts_dc.js';
-        $cache = new Cache($name);
-        if (!$cache->exist()) {
-            $script_min = "var WEB_ROOT = '".Storage::$webRoot."';\n";
-            $script_min .= file_get_contents(Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'jquery-3.3.1.min.js') . "\n";
-            $script_min .= file_get_contents(Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'jquery.validate.min.js') . "\n";
-            $script_min .= file_get_contents(Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'validate_ru.js') . "\n";
-            $script_min .= file_get_contents(Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'jquery.maskedinput.min.js') . "\n";
-            $script_min .= file_get_contents(Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'framework.js') . "\n";
-            if(Storage::$minifyScripts and strlen($script_min)>0) $script_min = \JsMin\Minify::minify($script_min);
-            $cache->save($script_min);
-        }
-        $result .= "\t".'<script src="' . Storage::$webRoot . 'cache/' . $name . '"></script>'."\n";
-        foreach (Storage::$loadPackages as $package){
-            if(isset(Storage::$scripts[$package]) and is_array(Storage::$scripts[$package])){
-                foreach (Storage::$scripts[$package] as $key=>$item){
-                    if(isset($item['type']) and $item['type']=='cdn'){
-                        $result .= "\t".'<script src="' . $item['file'] . '"></script>'."\n";
-                        unset(Storage::$scripts[$package][$key]);
-                    }
+        if(is_array(Storage::$scripts) and count(Storage::$scripts)>0){
+            $f = Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'framework.js';
+            array_unshift(Storage::$scripts, array( 'file'=>$f, 'version'=>filemtime($f), 'type'=>'file'));
+            $f = Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'jquery.maskedinput.min.js';
+            array_unshift(Storage::$scripts, array( 'file'=>$f, 'version'=>filemtime($f), 'type'=>'file'));
+            $f = Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'validate_ru.js';
+            array_unshift(Storage::$scripts, array( 'file'=>$f, 'version'=>filemtime($f), 'type'=>'file'));
+            $f = Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'jquery.validate.min.js';
+            array_unshift(Storage::$scripts, array( 'file'=>$f, 'version'=>filemtime($f), 'type'=>'file'));
+            $f = Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'jquery-3.3.1.min.js';
+            array_unshift(Storage::$scripts, array( 'file'=>$f, 'version'=>filemtime($f), 'type'=>'file'));
+
+            foreach (Storage::$scripts as $key=>$item){
+                if(isset($item['type']) and $item['type']=='cdn'){
+                    $result .= "\t".'<script src="' . $item['file'] . '"></script>'."\n";
+                    unset(Storage::$scripts[$key]);
                 }
-                $hash = md5(serialize(Storage::$scripts[$package]));
-                $name = 'scripts_' . $package . '_' . $hash . '.js';
-                $cache = new Cache($name);
-                if (!$cache->exist()) {
-                    $script_min = '';
-                    foreach (Storage::$scripts[$package] as $item){
-                        $file = $item['file'];
-                        $version = $item['version'];
-                        $script_content = file_get_contents($file);
-                        $script_min .= $script_content . "\n";
-                    }
-                    array_map("unlink", glob( Storage::$publicDir . 'cache' . DIRECTORY_SEPARATOR . 'scripts_' . $package . '_*'));
-                    if(Storage::$minifyScripts and strlen($script_min)>0) $script_min = \JsMin\Minify::minify($script_min);
-                    $cache->save($script_min);
-                }
-                $result .= "\t".'<script src="' . Storage::$webRoot . 'cache/' . $name . '"></script>'."\n";
             }
+            $hash_pack = md5(serialize(Storage::$assetsTemplatesList));
+            $hash = md5(serialize(Storage::$scripts));
+            $name = $hash_pack . '_' . $hash . '.js';
+            $cache = new Cache($name);
+            if (!$cache->exist()) {
+                $script_min = "var WEB_ROOT = '".Storage::$webRoot."';\n";
+                foreach (Storage::$scripts as $item){
+                    $file = $item['file'];
+                    $version = $item['version'];
+                    $script_content = file_get_contents($file);
+                    $script_min .= $script_content . "\n";
+                }
+                array_map("unlink", glob( Storage::$publicDir . 'cache' . DIRECTORY_SEPARATOR . $hash_pack . '_*.js'));
+                if(Storage::$minifyScripts and strlen($script_min)>0) $script_min = \JsMin\Minify::minify($script_min);
+                $cache->save($script_min);
+            }
+            $result .= "\t".'<script src="' . Storage::$webRoot . 'cache/' . $name . '"></script>'."\n";
         }
         echo $result;
     }

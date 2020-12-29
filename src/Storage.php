@@ -29,11 +29,12 @@ class Storage{
     public static $modelsFolder = 'models';
     public static $pluginsFolder = 'plugins';
     public static $templatesFolder = 'templates';
+    public static $assetsDirs = array();
     public static $errors = array();
     public static $fatalError = array();
     public static $rules = array();
-    public static $styles = array('main'=>array());
-    public static $scripts = array('main'=>array());
+    public static $styles = array();
+    public static $scripts = array();
     public static $assetsLinks = array();
     public static $minifyStyles = true;
     public static $minifyScripts = true;
@@ -90,8 +91,7 @@ class Storage{
     public static $metaTitle = '';
     public static $metaDescription = '';
     public static $metaKeywords = array();
-    public static $loadPackages = array('main');
-
+    public static $assetsTemplatesList = array();
     /**
      * Хранилище данных для использования в приложении
      */

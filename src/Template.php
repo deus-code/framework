@@ -37,9 +37,6 @@ class Template{
             Storage::$metaKeywords[] = $keyword;
         }
     }
-    public function loadPackage($package){
-        Storage::$loadPackages[] = $package;
-    }
 
     public function exist($template,$plugin=false){
         $file = Storage::$frameworkTemplatesDir . $template . '.phtml';

@@ -77,29 +77,15 @@ class AppConfig{
         );
     }
 
-    public function setStyle($file,$package='main'){
-        Storage::$styles[$package][md5($file)] = array(
-            'file'=>$file,
-            'version'=>filemtime($file),
+    public function setAssetsDir($dir,$plugin='main'){
+        Storage::$assetsDirs[$plugin] = $dir;
+        $assets_url = ($plugin!='main') ? $plugin.'/assets' : 'assets';
+        Storage::$assetsLinks[md5($assets_url)] = array(
+            'name'=>$assets_url,
+            'dir'=>$dir,
         );
     }
-
-    public function setScript($file,$package='main'){
-        Storage::$scripts[$package][md5($file)] = array(
-            'file'=>$file,
-            'version'=>filemtime($file),
-            'type'=>'file',
-        );
-    }
-
-    public function setScriptCDN($url,$package='main'){
-        Storage::$scripts[$package][md5('cdn'.$url)] = array(
-            'file'=>$url,
-            'version'=>'1.0',
-            'type'=>'cdn',
-        );
-    }
-
+    
     public function debug(){
         Storage::$debug = true;
     }
