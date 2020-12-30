@@ -30,6 +30,18 @@ function DCFramework() {
             $(this).removeClass('dcAjaxLink');
             $(this).on('click',function(){
                 var link = $(this).attr('href');
+                $.ajax({
+                    type: "GET",
+                    url: link,
+                    dataType : 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function(data){
+                        if(data.callback){
+                            eval(data.callback)();
+                        }
+                    }
+                });
                 return false;
             });
         });
