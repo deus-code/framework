@@ -119,6 +119,8 @@ class Db{
 				$against = implode('* +',$search);
 				$where = $cond.' ('.implode(',',$key).') AGAINST (\'+'.$against.'*\' IN BOOLEAN MODE)';
 			}
+        }elseif(strtoupper($cond)=='LIKE'){
+            $where = $key.' '.$cond.' \''.$value.'\'';
 		}else{
 			$newKey = preg_replace('/^/',':where_'.self::$whereKeyIndex.'_',$key,1);
 			$where = $key.' '.$cond.' '.$newKey;
