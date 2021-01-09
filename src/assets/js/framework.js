@@ -219,7 +219,7 @@ function DCFramework() {
     }
 }
 
-var TF = new DCFramework();
+var DCF = new DCFramework();
 $( document ).ready(function() {
-    TF.init();
+    DCF.init();
 });
