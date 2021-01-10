@@ -31,9 +31,10 @@ class Popup{
         Storage::$popup = true;
         Storage::$popupContent = $content;
     }
-    public function setContentTemplate($template){
+    public function setContentTemplate($template,$plugin=false){
         Storage::$popup = true;
         Storage::$mainTemplate = $template;
+        Storage::$mainTemplatePlugin = $plugin;
         $templateClass = new TemplateEngine();
         $templateClass->render();
         Storage::$popupContent = $templateClass->getRenderHtml();
