@@ -190,14 +190,14 @@ class TemplateEngine{
     private function compileStyles(){
 	    $result = '';
         if(is_array(Storage::$styles)){
-            $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'popup.less';
-            array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
             if(Storage::$debug){
                 $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'debug.less';
                 array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
             }
-            $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'framework.less';
-            array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
+            if(count(Storage::$fatalError)>0){
+                $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'fatal-error.less';
+                array_unshift(Storage::$styles, array( 'file'=>$f, 'version'=>filemtime($f)));
+            }
 
             $hash_pack = md5(serialize(Storage::$assetsTemplatesList));
             $hash = md5(serialize(Storage::$styles));
