@@ -32,6 +32,14 @@ class App{
         Storage::$namespacePlugins = $namespacePlugins;
         Storage::$frameworkTemplatesDir = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR;
         Storage::$frameworkAssetsDir = __DIR__.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR;
+
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
+        if(isset($backtrace[0]['file'])){
+            Storage::$publicDir = dirname($backtrace[0]['file']) . DIRECTORY_SEPARATOR;
+        }else{
+            trigger_error('Unable to determine the path to public directory');
+        }
+
 	    // инициализация обработчика ошибок
 	    $this->errorHandler = new ErrorHandler();
         $this->errorHandler->init();
@@ -57,13 +65,6 @@ class App{
             Storage::$pluginsList[] = $plugin;
         }
 
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
-        if(isset($backtrace[0]['file'])){
-            Storage::$publicDir = dirname($backtrace[0]['file']) . DIRECTORY_SEPARATOR;
-        }else{
-            trigger_error('Unable to determine the path to public directory');
-        }
-        
         if(count(Storage::$assetsLinks)>0){
             foreach (Storage::$assetsLinks as $item){
                 Storage::$rules[$item['name'].'/{file:all}'] = array('symlink'=>$item['dir']);
