@@ -40,6 +40,7 @@ class Model{
         $this->form = Instance::getFormInstance();
         $this->query = Instance::getQueryInstance();
         $this->template = Instance::getTemplateInstance();
+        if($this->pluginName!=false) $this->template->pluginName = $this->pluginName;
         $this->files = Instance::getFilesInstance();
         $this->settings = Instance::getSettingsInstance();
     }

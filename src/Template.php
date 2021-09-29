@@ -15,14 +15,17 @@ namespace DCFramework;
  * @package DCFramework
  */
 class Template{
+    public $pluginName = false;
     public function assign($key,$value){
         Storage::$templateVars[$key] = $value;
     }
     public function setMain($template,$plugin=false){
+        if(!$plugin and $this->pluginName!=false) $plugin = $this->pluginName;
         Storage::$mainTemplate = $template;
         Storage::$mainTemplatePlugin = $plugin;
     }
     public function setOutput($template,$plugin=false){
+        if(!$plugin and $this->pluginName!=false) $plugin = $this->pluginName;
         Storage::$outputTemplate = $template;
         Storage::$outputTemplatePlugin = $plugin;
     }
@@ -39,6 +42,7 @@ class Template{
     }
 
     public function exist($template,$plugin=false){
+        if(!$plugin and $this->pluginName!=false) $plugin = $this->pluginName;
         $file = Storage::$frameworkTemplatesDir . $template . '.phtml';
         $appMainFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template . '.phtml';
         $result = false;
@@ -52,6 +56,7 @@ class Template{
     }
 
     public function getRender($template,$plugin=false){
+        if(!$plugin and $this->pluginName!=false) $plugin = $this->pluginName;
         $temp = Storage::$mainTemplate;
         $temp_plugin = Storage::$mainTemplatePlugin;
         Storage::$mainTemplate = $template;
