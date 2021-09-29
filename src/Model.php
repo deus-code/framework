@@ -33,7 +33,7 @@ class Model{
     public $loadedPlugins = array();
 
     public function __construct(){
-        preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$controllersFolder.'/', get_called_class(), $matches);
+        preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$modelsFolder.'/', get_called_class(), $matches);
         if(isset($matches[1])) $this->pluginName = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
         $this->popup = Instance::getPopupInstance();
