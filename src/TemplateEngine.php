@@ -19,19 +19,21 @@ namespace DCFramework;
  * @property Settings $settings
  */
 class TemplateEngine{
-	private $minify;
+    private $minify;
     private $vars = array();
-	private $html = '';
+    private $html = '';
     public $session;
     public $query;
     public $settings;
+    public $plugin='main';
 
-	function __construct(){
+    function __construct(){
         $this->session = Instance::getSessionInstance();
         $this->vars = Storage::$templateVars;
         $this->minify = new Minify();
         $this->query = Instance::getQueryInstance();
         $this->settings = Instance::getSettingsInstance();
+        if(Storage::$mainTemplatePlugin!=false) $this->plugin = Storage::$mainTemplatePlugin;
     }
 
     public function render(){
@@ -51,14 +53,14 @@ class TemplateEngine{
             require $mainFile;
             $this->html = ob_get_clean();
         }
-	}
-
-	public function getRenderHtml(){
-	    return $this->html;
     }
 
-	public function output(){
-		ob_start();
+    public function getRenderHtml(){
+        return $this->html;
+    }
+
+    public function output(){
+        ob_start();
         $appHtmlFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . Storage::$outputTemplate .'.phtml';
         $dcHtmlFile = Storage::$frameworkTemplatesDir . Storage::$outputTemplate .'.phtml';
         $pluginHtmlFile = false;
@@ -72,84 +74,94 @@ class TemplateEngine{
         }elseif(file_exists($dcHtmlFile)){
             require $dcHtmlFile;
         }
-		$html = ob_get_clean();
-		if(Storage::$minifyHtml) $html = $this->minify->html($html);
-		echo $html;
-	}
+        $html = ob_get_clean();
+        if(Storage::$minifyHtml) $html = $this->minify->html($html);
+        echo $html;
+    }
 
-	public function loadTemplate($template,$vars=array(),$plugin=false){
-	    if(is_array($vars)){
-	        foreach ($vars as $key=>$var){
+    public function loadTemplate($template,$vars=array(),$plugin=false){
+        if(is_array($vars)){
+            foreach ($vars as $key=>$var){
                 $this->vars[$key]=$var;
             }
         }
-		$file = Storage::$frameworkTemplatesDir . $template . '.phtml';
+        $file = Storage::$frameworkTemplatesDir . $template . '.phtml';
         $appMainFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template . '.phtml';
         if(file_exists($appMainFile)) $file = $appMainFile;
-        if($plugin!=false){
-            $pluginMainFile = Storage::$pluginsDir . $plugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template .'.phtml';
+        $load_plugin = false;
+        if($this->plugin!='main') $load_plugin = $this->plugin;
+        if($plugin!=false) $load_plugin = $plugin;
+        if($load_plugin!=false){
+            $pluginMainFile = Storage::$pluginsDir . $load_plugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template .'.phtml';
             if(file_exists($pluginMainFile)) $file = $pluginMainFile;
         }
-		if(file_exists($file)) require $file;
-	}
+        if(file_exists($file)) require $file;
+    }
 
-	public function existTemplate($template,$plugin=false){
-		$file = Storage::$frameworkTemplatesDir . $template . '.phtml';
+    public function existTemplate($template,$plugin=false){
+        $file = Storage::$frameworkTemplatesDir . $template . '.phtml';
         $appMainFile = Storage::$appDir . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template . '.phtml';
         $result = false;
         if(file_exists($appMainFile)) $result = true;
-        if($plugin!=false){
-            $pluginMainFile = Storage::$pluginsDir . $plugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template .'.phtml';
+        $load_plugin = false;
+        if($this->plugin!='main') $load_plugin = $this->plugin;
+        if($plugin!=false) $load_plugin = $plugin;
+        if($load_plugin!=false){
+            $pluginMainFile = Storage::$pluginsDir . $load_plugin . DIRECTORY_SEPARATOR . Storage::$templatesFolder . DIRECTORY_SEPARATOR . $template .'.phtml';
             if(file_exists($pluginMainFile)) $file = $pluginMainFile;
         }
-		if(file_exists($file)) $result = true;
-		return $result;
-	}
+        if(file_exists($file)) $result = true;
+        return $result;
+    }
 
-	public function get($key){
-		if(array_key_exists($key,$this->vars)) {
-			return $this->vars[$key];
-		}else{
-			return false;
-		}
-	}
+    public function get($key){
+        if(array_key_exists($key,$this->vars)) {
+            return $this->vars[$key];
+        }else{
+            return false;
+        }
+    }
 
-	public function frameworkBody(){
+    public function frameworkBody(){
         echo $this->html;
-	}
+    }
 
-	public function frameworkHeader(){
-	    $meta = "\t".'<meta charset="utf-8" />'."\n";
-	    $meta .= "\t".'<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
-	    $meta .= "\t".'<title>'.Storage::$metaTitle.'</title>'."\n";
-	    if(strlen(Storage::$metaDescription)>0){
+    public function frameworkHeader(){
+        $meta = "\t".'<meta charset="utf-8" />'."\n";
+        $meta .= "\t".'<meta name="viewport" content="width=device-width, initial-scale=1.0" />'."\n";
+        $meta .= "\t".'<title>'.Storage::$metaTitle.'</title>'."\n";
+        if(strlen(Storage::$metaDescription)>0){
             $meta .= "\t".'<meta name="description" content="'.Storage::$metaDescription.'" />'."\n";
         }
-	    if(count(Storage::$metaKeywords)>0){
+        if(count(Storage::$metaKeywords)>0){
             $meta .= "\t".'<meta name="keywords" content="'.implode(', ',Storage::$metaKeywords).'" />'."\n";
         }
-	    echo $meta;
-	    $this->compileStyles();
-	}
+        echo $meta;
+        $this->compileStyles();
+    }
 
-	public function frameworkFooter(){
-		$dir = Storage::$frameworkTemplatesDir;
-		if(Storage::$debug){
+    public function frameworkFooter(){
+        $dir = Storage::$frameworkTemplatesDir;
+        if(Storage::$debug){
             $this->loadTemplate('dc-debug');
         }
         $this->compileScripts();
-	}
+    }
 
     public function getWebRoot(){
         return Storage::$webRoot;
     }
 
-    public function setStyle($file,$plugin='main'){
-	    $template = false;
+    public function setStyle($file,$plugin=false){
+        $template = false;
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
         if(isset($backtrace[0]['file'])) $template = $backtrace[0]['file'];
         if($template) Storage::$assetsTemplatesList[$template] = $template;
-	    $dir = (isset(Storage::$assetsDirs[$plugin])) ? Storage::$assetsDirs[$plugin] : '';
+
+        $load_plugin = $this->plugin;
+        if($plugin!=false) $load_plugin = $plugin;
+
+        $dir = (isset(Storage::$assetsDirs[$load_plugin])) ? Storage::$assetsDirs[$load_plugin] : '';
         $file = $dir.$file;
         if(file_exists($file)){
             Storage::$styles[md5($file)] = array(
@@ -160,11 +172,15 @@ class TemplateEngine{
     }
 
     public function setScript($file,$plugin='main'){
-	    $template = false;
+        $template = false;
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
         if(isset($backtrace[0]['file'])) $template = $backtrace[0]['file'];
         if($template) Storage::$assetsTemplatesList[$template] = $template;
-	    $dir = (isset(Storage::$assetsDirs[$plugin])) ? Storage::$assetsDirs[$plugin] : '';
+
+        $load_plugin = $this->plugin;
+        if($plugin!=false) $load_plugin = $plugin;
+
+        $dir = (isset(Storage::$assetsDirs[$load_plugin])) ? Storage::$assetsDirs[$load_plugin] : '';
         $file = $dir.$file;
         if(file_exists($file)){
             Storage::$scripts[md5($file)] = array(
@@ -176,7 +192,7 @@ class TemplateEngine{
     }
 
     public function setScriptCDN($url){
-	    $template = false;
+        $template = false;
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1);
         if(isset($backtrace[0]['file'])) $template = $backtrace[0]['file'];
         if($template) Storage::$assetsTemplatesList[$template] = $template;
@@ -188,7 +204,7 @@ class TemplateEngine{
     }
 
     private function compileStyles(){
-	    $result = '';
+        $result = '';
         if(is_array(Storage::$styles)){
             if(Storage::$debug){
                 $f = Storage::$frameworkAssetsDir.'less'.DIRECTORY_SEPARATOR.'debug.less';
@@ -240,8 +256,8 @@ class TemplateEngine{
         echo $result;
     }
 
-	private function compileScripts(){
-	    $result = '';
+    private function compileScripts(){
+        $result = '';
         if(is_array(Storage::$scripts) and count(Storage::$scripts)>0){
             $f = Storage::$frameworkAssetsDir.'js'.DIRECTORY_SEPARATOR.'framework.js';
             array_unshift(Storage::$scripts, array( 'file'=>$f, 'version'=>filemtime($f), 'type'=>'file'));
