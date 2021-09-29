@@ -159,7 +159,7 @@ class Db{
         return $this;
     }
 
-	public function where($cond,$key,$value){
+	public function where($key,$cond,$value){
 		$where = $this->genWhere($cond,$key,$value);
 		if($this->where!=null){
 			$this->where .= ' '.$where;

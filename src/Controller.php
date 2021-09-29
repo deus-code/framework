@@ -36,11 +36,12 @@ class Controller{
     public $template;
     public $files;
     public $settings;
-    public $plugin = false;
+    public $pluginName = false;
+    public $loadedPlugins = array();
 
     public function __construct(){
         preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$controllersFolder.'/', get_called_class(), $matches);
-        if(isset($matches[1])) $this->plugin = str_replace('\\','',$matches[1]);
+        if(isset($matches[1])) $this->pluginName = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
         $this->popup = Instance::getPopupInstance();
         $this->form = Instance::getFormInstance();
@@ -50,8 +51,23 @@ class Controller{
         $this->settings = Instance::getSettingsInstance();
     }
 
+    function plugin($pluginName){
+        if($this->checkPlugin($pluginName)){
+            if(array_key_exists($pluginName,$this->loadedPlugins)){
+                return $this->loadedPlugins[$pluginName];
+            }else{
+                $this->loadedPlugins[$pluginName] = new Controller();
+                $this->loadedPlugins[$pluginName]->pluginName = $pluginName;
+                return $this->loadedPlugins[$pluginName];
+            }
+        }else{
+            trigger_error('Plugin "'.$pluginName.'" not found',E_USER_ERROR);
+            return $this; // для подсказок ide
+        }
+    }
+
     function __get($modelName){
-        return Instance::getModelInstance($modelName,$this->plugin);
+        return Instance::getModelInstance($modelName,$this->pluginName);
     }
 
     function checkPlugin($pluginName){
