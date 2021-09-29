@@ -36,8 +36,11 @@ class Controller{
     public $template;
     public $files;
     public $settings;
+    public $plugin = false;
 
     public function __construct(){
+        preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$controllersFolder.'/', get_called_class(), $matches);
+        if(isset($matches[1])) $this->plugin = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
         $this->popup = Instance::getPopupInstance();
         $this->form = Instance::getFormInstance();
@@ -46,11 +49,9 @@ class Controller{
         $this->files = Instance::getFilesInstance();
         $this->settings = Instance::getSettingsInstance();
     }
-    
-    function loadModel($modelName,$plugin=false){
-        if(!isset($this->$modelName)) {
-            $this->$modelName = Instance::getModelInstance($modelName,$plugin);
-        }
+
+    function __get($modelName){
+        return Instance::getModelInstance($modelName,$this->plugin);
     }
 
     function checkPlugin($pluginName){

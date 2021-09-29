@@ -29,8 +29,11 @@ class Model{
     public $template;
     public $files;
     public $settings;
+    public $plugin = false;
 
     public function __construct(){
+        preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$controllersFolder.'/', get_called_class(), $matches);
+        if(isset($matches[1])) $this->plugin = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
         $this->popup = Instance::getPopupInstance();
         $this->form = Instance::getFormInstance();
@@ -40,25 +43,23 @@ class Model{
         $this->settings = Instance::getSettingsInstance();
     }
 
-	public function table($table){
-		$db = new Db();
-		$db->connect(
-			Storage::$dbName,
-			Storage::$dbHost,
-			Storage::$dbUser,
-			Storage::$dbPassword,
-			$table,
+    public function table($table){
+        $db = new Db();
+        $db->connect(
+            Storage::$dbName,
+            Storage::$dbHost,
+            Storage::$dbUser,
+            Storage::$dbPassword,
+            $table,
             Storage::$dbTablePrefix,
             Storage::$dbCharset,
             Storage::$dbDriver
-		);
-		return $db;
-	}
-	
-    function loadModel($modelName,$plugin=false){
-        if(!isset($this->$modelName)) {
-            $this->$modelName = Instance::getModelInstance($modelName,$plugin);
-        }
+        );
+        return $db;
+    }
+
+    function __get($modelName){
+        return Instance::getModelInstance($modelName,$this->plugin);
     }
 
     function checkPlugin($pluginName){
