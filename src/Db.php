@@ -85,7 +85,7 @@ class Db{
 		return $result;
 	}
 
-	protected function genWhere($cond,$key,$value){
+	protected function genWhere($key,$cond,$value){
 		$where = null;
 		if(strtoupper($cond)=='IN') {
 			if(is_array($value) AND count($value)>0){
@@ -160,7 +160,7 @@ class Db{
     }
 
 	public function where($key,$cond,$value){
-		$where = $this->genWhere($cond,$key,$value);
+		$where = $this->genWhere($key,$cond,$value);
 		if($this->where!=null){
 			$this->where .= ' '.$where;
 		}else{
@@ -206,9 +206,9 @@ class Db{
 				$q[] = '(LOWER('.$c.') REGEXP LOWER(\''.$r.'\'))';
 			}
 			if($this->where!=null){
-				$this->where .= ' AND '.$this->genWhere('CQUERY','('.implode(' OR ',$q).')',null);
+				$this->where .= ' AND '.$this->genWhere('('.implode(' OR ',$q).')','CQUERY',null);
 			}else{
-				$this->where = $this->cquery.' WHERE '.$this->genWhere('CQUERY','('.implode(' OR ',$q).')',null);
+				$this->where = $this->cquery.' WHERE '.$this->genWhere('('.implode(' OR ',$q).')','CQUERY',null);
 			}
 		}
 		return $this;
