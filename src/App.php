@@ -21,11 +21,9 @@ class App{
     private $configApp;
     private $errorHandler;
     private $status = 200;
-    private $mainTemplate;
-    private $outputTemplate;
     private $Files;
 
-	function __construct($namespaceApp,$namespacePlugins='plugins'){
+    function __construct($namespaceApp,$namespacePlugins='plugins'){
         if(!session_id()) session_start();
         $this->Files = new Files();
         Storage::$namespaceApp = $namespaceApp;
@@ -40,8 +38,8 @@ class App{
             trigger_error('Unable to determine the path to public directory');
         }
 
-	    // инициализация обработчика ошибок
-	    $this->errorHandler = new ErrorHandler();
+        // инициализация обработчика ошибок
+        $this->errorHandler = new ErrorHandler();
         $this->errorHandler->init();
 
         $this->initRequest();
@@ -103,15 +101,11 @@ class App{
                     Storage::$metaTitle = '403 - Forbidden';
                     Storage::$mainTemplate = $this->status;
                     break;
-                default:
-                    if(!empty($this->mainTemplate)) Storage::$mainTemplate = $this->mainTemplate;
-                    break;
             }
-            if(!empty($this->outputTemplate)) Storage::$outputTemplate = $this->outputTemplate;
             $template->render();
             $template->output();
         }
-	}
+    }
 
     /**
      * Определение запроса пользователя
@@ -138,7 +132,7 @@ class App{
      * @param $result
      * @return bool
      */
-	private function loadController($result){
+    private function loadController($result){
         $render = true;
         $result['controller'] = ucfirst($result['controller']);
         if($result['plugin']!=false){
@@ -146,7 +140,7 @@ class App{
         }else{
             $controllerName = '\\'.Storage::$namespaceApp.'\\'.Storage::$controllersFolder.'\\'.$result['controller'].'Controller';
         }
-		if(class_exists($controllerName)){
+        if(class_exists($controllerName)){
             $controller = new $controllerName();
             if(is_array($result['options']) and count($result['options'])>0){
                 foreach ($result['options'] as $key=>$option){
@@ -169,7 +163,6 @@ class App{
                     }elseif($controller->is_reload){
                         $this->redirect(Storage::$requestUri);
                     }else{
-                        $this->outputTemplate = $controller->outputTemplate;
                         switch($controller->getType()){
                             case 'json':
                                 $this->setContentType('application/json');
@@ -185,7 +178,6 @@ class App{
                                 echo json_encode($jsonData);
                                 break;
                             case 'html':
-                                $this->mainTemplate = $controller->mainTemplate;
                                 $this->setContentType('text/html');
                                 break;
                         }
@@ -196,11 +188,11 @@ class App{
             }else{
                 $this->setStatus(404);
             }
-		}else{
-		   $this->setStatus(404);
-		}
-		return $render;
-	}
+        }else{
+            $this->setStatus(404);
+        }
+        return $render;
+    }
 
     private function loadSymlink($result){
         if(isset($result['options']['file'])){
