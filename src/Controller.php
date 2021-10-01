@@ -55,7 +55,7 @@ class Controller{
             if(array_key_exists($pluginName,$this->loadedPlugins)){
                 return $this->loadedPlugins[$pluginName];
             }else{
-                $this->loadedPlugins[$pluginName] = new Controller();
+                $this->loadedPlugins[$pluginName] = new LoadedPlugin();
                 $this->loadedPlugins[$pluginName]->pluginName = $pluginName;
                 return $this->loadedPlugins[$pluginName];
             }

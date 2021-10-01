@@ -17,7 +17,6 @@ namespace DCFramework;
  * @property Popup $popup
  * @property Form $form
  * @property Query $query
- * @property Template $template
  * @property Files $files
  * @property Settings $settings
  */
@@ -35,8 +34,6 @@ class Model{
         if(isset($matches[1])) $this->pluginName = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
         $this->query = Instance::getQueryInstance();
-        $this->template = Instance::getTemplateInstance();
-        if($this->pluginName!=false) $this->template->pluginName = $this->pluginName;
         $this->files = Instance::getFilesInstance();
         $this->settings = Instance::getSettingsInstance();
     }
@@ -61,7 +58,7 @@ class Model{
             if(array_key_exists($pluginName,$this->loadedPlugins)){
                 return $this->loadedPlugins[$pluginName];
             }else{
-                $this->loadedPlugins[$pluginName] = new Controller();
+                $this->loadedPlugins[$pluginName] = new LoadedPlugin();
                 $this->loadedPlugins[$pluginName]->pluginName = $pluginName;
                 return $this->loadedPlugins[$pluginName];
             }
