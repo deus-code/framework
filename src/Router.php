@@ -32,11 +32,13 @@ class Router{
 	private $rules = array();
 
 	function __construct(){
+        $this->rules[Storage::$webRoot.'{controller}/{action}/'] = array();
+        $this->rules[Storage::$webRoot.'{controller}/{action}.json'] = array('accessType'=>'json');
+        $this->rules[Storage::$webRoot.'{plugin}/{controller}/{action}/'] = array();
+        $this->rules[Storage::$webRoot.'{plugin}/{controller}/{action}.json'] = array('accessType'=>'json');
 	    foreach (Storage::$rules as $rule=>$options){
 	        $this->rules[Storage::$webRoot.$rule] = $options;
         }
-        $this->rules[Storage::$webRoot.'{controller}/{action}/'] = array();
-        $this->rules[Storage::$webRoot.'{controller}/{action}.json'] = array('accessType'=>'json');
     }
 
     public function start(){
