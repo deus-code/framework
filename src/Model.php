@@ -66,8 +66,8 @@ class Model{
                 return $this->loadedPlugins[$pluginName];
             }
         }else{
-            trigger_error('Plugin "'.$pluginName.'" not found',E_USER_ERROR);
-            return $this; // для подсказок ide
+            if(1==2) return $this; // для подсказок ide
+            return new EmptyPlugin();
         }
     }
 
