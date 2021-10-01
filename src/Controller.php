@@ -84,9 +84,11 @@ class Controller{
     }
     public function error404(){
         $this->status=404;
+        return true;
     }
     public function error403(){
         $this->status=403;
+        return true;
     }
     public function isHtmlType(){
         $this->type='html';
