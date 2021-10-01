@@ -62,25 +62,6 @@ class Storage{
     public static $dbTablePrefix = '';
     public static $dbCharset = 'utf8';
     /**
-     * Настройки popup окна
-     */
-    public static $popup = false;
-    public static $popupTitle = false;
-    public static $popupHideClose = false;
-    public static $popupContent = false;
-    public static $popupBtnOne = false;
-    public static $popupBtnTwo = false;
-    public static $popupForm = false;
-    public static $popupFormAction = false;
-    public static $popupClass = false;
-    /**
-     * Настройки формы
-     */
-    public static $form = false;
-    public static $formSuccessMessage = false;
-    public static $formErrorMessage = false;
-    public static $formSuccessCallback = false;
-    /**
      * Настройки шаблона
      */
     public static $mainTemplate = 'index';

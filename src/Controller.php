@@ -27,11 +27,9 @@ class Controller{
     private $jsonData;
     public $is_redirect = false;
     public $is_reload = false;
-    public $mainTemplate;
-    public $outputTemplate;
+    public $mainTemplate = false;
+    public $outputTemplate = false;
     public $session;
-    public $popup;
-    public $form;
     public $query;
     public $template;
     public $files;
@@ -43,11 +41,11 @@ class Controller{
         preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$controllersFolder.'/', get_called_class(), $matches);
         if(isset($matches[1])) $this->pluginName = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
-        $this->popup = Instance::getPopupInstance();
-        $this->form = Instance::getFormInstance();
         $this->query = Instance::getQueryInstance();
         $this->template = Instance::getTemplateInstance();
         if($this->pluginName!=false) $this->template->pluginName = $this->pluginName;
+        if($this->mainTemplate!=false) $this->template->setMain($this->mainTemplate);
+        if($this->outputTemplate!=false) $this->template->setOutput($this->outputTemplate);
         $this->files = Instance::getFilesInstance();
         $this->settings = Instance::getSettingsInstance();
     }

@@ -23,8 +23,6 @@ namespace DCFramework;
  */
 class Model{
     public $session;
-    public $popup;
-    public $form;
     public $query;
     public $template;
     public $files;
@@ -36,8 +34,6 @@ class Model{
         preg_match('/'.Storage::$namespacePlugins.'(.*)'.Storage::$modelsFolder.'/', get_called_class(), $matches);
         if(isset($matches[1])) $this->pluginName = str_replace('\\','',$matches[1]);
         $this->session = Instance::getSessionInstance();
-        $this->popup = Instance::getPopupInstance();
-        $this->form = Instance::getFormInstance();
         $this->query = Instance::getQueryInstance();
         $this->template = Instance::getTemplateInstance();
         if($this->pluginName!=false) $this->template->pluginName = $this->pluginName;

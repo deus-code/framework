@@ -182,23 +182,6 @@ class App{
                                         $jsonData[$key] = $item;
                                     }
                                 }
-                                if(Storage::$popup){
-                                    $jsonData['popup'] = array();
-                                    $jsonData['popup']['title'] = Storage::$popupTitle;
-                                    $jsonData['popup']['hideClose'] = Storage::$popupHideClose;
-                                    $jsonData['popup']['content'] = Storage::$popupContent;
-                                    $jsonData['popup']['btnOne'] = Storage::$popupBtnOne;
-                                    $jsonData['popup']['btnTwo'] = Storage::$popupBtnTwo;
-                                    $jsonData['popup']['form'] = Storage::$popupForm;
-                                    $jsonData['popup']['formAction'] = Storage::$popupFormAction;
-                                    $jsonData['popup']['class'] = Storage::$popupClass;
-                                }
-                                if(Storage::$form){
-                                    $jsonData['form'] = array();
-                                    $jsonData['form']['success'] = Storage::$formSuccessMessage;
-                                    $jsonData['form']['error'] = Storage::$formErrorMessage;
-                                    $jsonData['form']['successCallback'] = Storage::$formSuccessCallback;
-                                }
                                 echo json_encode($jsonData);
                                 break;
                             case 'html':

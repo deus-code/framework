@@ -40,22 +40,6 @@ class Instance{
         return self::$_session_instance;
     }
 
-    public static $_popup_instance = null;
-    public static function getPopupInstance() {
-        if (self::$_popup_instance==null) {
-            self::$_popup_instance = new Popup();
-        }
-        return self::$_popup_instance;
-    }
-
-    public static $_form_instance = null;
-    public static function getFormInstance() {
-        if (self::$_form_instance==null) {
-            self::$_form_instance = new Form();
-        }
-        return self::$_form_instance;
-    }
-
     public static $_query_instance = null;
     public static function getQueryInstance() {
         if (self::$_query_instance==null) {
